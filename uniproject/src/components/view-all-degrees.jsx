@@ -1,42 +1,54 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 export default function ViewAllDegrees() {
   const [degrees, setDegrees] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/degree/")
       .then((response) => response.json())
-      .then((data) => setDegrees(data));
+      .then((data) => { setDegrees(data); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-4xl font-bold text-center mb-8">All Degrees</h1>
-      <div className="grid grid-cols-1 gap-4">
-        {degrees.map((degree, index) => (
-          <div
-            key={index}
-            className="bg-white shadow-lg rounded-lg overflow-hidden transform hover:scale-105 transition duration-300"
-          >
-            <div className="px-6 py-4">
-              <h2 className="text-2xl font-semibold mb-2 text-gray-900">
-                {degree.full_name}
-              </h2>
-              <p className="text-gray-700">
-                Shortname: <strong>{degree.shortcode}</strong>
-              </p>
-            </div>
-            <div className="px-6 py-4">
-              <a
-                href={`/degree/${degree.shortcode}`}
-                className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition duration-300"
-              >
-                View Degree & Cohorts
-              </a>
-            </div>
-          </div>
-        ))}
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">All Degrees</h1>
+        <p className="page-subtitle">Browse all registered degree programmes</p>
       </div>
+
+      {loading ? (
+        <div className="flex justify-center py-20"><div className="spinner"></div></div>
+      ) : degrees.length === 0 ? (
+        <div className="text-center py-20">
+          <p className="text-white/25 text-sm">No degrees found.</p>
+        </div>
+      ) : (
+        <div className="card-grid">
+          {degrees.map((degree, i) => (
+            <Link
+              key={i}
+              to={`/degree/${degree.shortcode}`}
+              className="group card p-6 animate-slide-up"
+              style={{ animationDelay: `${i * 60}ms`, animationFillMode: "backwards" }}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <h2 className="text-[15px] font-medium text-white/80 group-hover:text-white transition-colors">
+                  {degree.full_name}
+                </h2>
+                <span className="tag ml-3 shrink-0">{degree.shortcode}</span>
+              </div>
+              <div className="flex justify-end">
+                <span className="text-xs text-white/20 group-hover:text-white/40 transition-colors">
+                  View details →
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

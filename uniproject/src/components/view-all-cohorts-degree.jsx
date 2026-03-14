@@ -1,57 +1,49 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
 function ViewAllCohortsDegree() {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { degree } = useParams();
 
   useEffect(() => {
     let apiUrl = "http://127.0.0.1:8000/api/cohort/";
-    if (degree) {
-      apiUrl += `?degree=${degree}`;
-    }
+    if (degree) apiUrl += `?degree=${degree}`;
     fetch(apiUrl)
-      .then((response) => response.json())
-      .then((data) => setData(data));
+      .then((r) => r.json())
+      .then((data) => { setData(data); setLoading(false); })
+      .catch(() => setLoading(false));
   }, [degree]);
 
-  const displayAllCohorts = () => {
-    return (
-      <div className="bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold mb-4">Cohorts</h1>
-          <div className="grid grid-cols-1 gap-4">
-            {data.map((cohort, index) => (
-              <div
-                key={index}
-                className="bg-white shadow-md rounded-lg overflow-hidden"
-              >
-                <div className="px-6 py-4">
-                  <h2 className="text-xl font-semibold mb-2">{cohort.name}</h2>
-                  <div className="flex space-x-2">
-                    <a
-                      href={`/students/${cohort.id}`}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
-                    >
-                      View All Students
-                    </a>
-                    <a
-                      href={`/modules-cohort/${cohort.id}`}
-                      className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-300"
-                    >
-                      View All Modules
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+  return (
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">Cohorts</h1>
+        <p className="page-subtitle">{degree ? `Cohorts for ${degree}` : "All registered cohorts"}</p>
       </div>
-    );
-  };
 
-  return displayAllCohorts();
+      {loading ? (
+        <div className="flex justify-center py-20"><div className="spinner"></div></div>
+      ) : data.length === 0 ? (
+        <div className="text-center py-20"><p className="text-white/25 text-sm">No cohorts found.</p></div>
+      ) : (
+        <div className="card-grid">
+          {data.map((cohort, i) => (
+            <div key={i} className="card p-6 animate-slide-up" style={{ animationDelay: `${i * 60}ms`, animationFillMode: "backwards" }}>
+              <div className="flex items-start justify-between mb-4">
+                <h2 className="text-[15px] font-medium text-white/80">{cohort.name}</h2>
+                <span className="tag ml-3 shrink-0">{cohort.id}</span>
+              </div>
+              <div className="flex gap-3 mt-5">
+                <Link to={`/students/${cohort.id}`} className="btn-primary text-xs flex-1 text-center">Students</Link>
+                <Link to={`/modules-cohort/${cohort.id}`} className="btn-outline text-xs flex-1 text-center">Modules</Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default ViewAllCohortsDegree;

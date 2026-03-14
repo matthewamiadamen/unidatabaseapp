@@ -1,35 +1,46 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
 function ViewSingleDegree() {
   const [data, setData] = useState({});
+  const [loading, setLoading] = useState(true);
   const { degree } = useParams();
 
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/degree/${degree}/`)
-      .then((response) => response.json())
-      .then((data) => setData(data));
+      .then((r) => r.json())
+      .then((data) => { setData(data); setLoading(false); })
+      .catch(() => setLoading(false));
   }, [degree]);
 
   return (
-    <div className="bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4">Degree Information</h1>
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <div className="px-4 py-5 sm:px-6">
-            <h2 className="text-lg font-semibold mb-2">Degree Name:</h2>
-            <p className="text-lg">
-              <strong>{data.full_name}</strong>
-            </p>
-          </div>
-          <div className="px-4 py-5 sm:px-6">
-            <h2 className="text-lg font-semibold mb-2">Degree Code:</h2>
-            <p className="text-lg">
-              <strong>{data.shortcode}</strong>
-            </p>
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">Degree Details</h1>
+        <p className="page-subtitle">Programme information</p>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-20"><div className="spinner"></div></div>
+      ) : (
+        <div className="max-w-xl animate-slide-up">
+          <div className="card p-8">
+            <div className="detail-row">
+              <span className="detail-label">Degree Name</span>
+              <span className="detail-value">{data.full_name}</span>
+            </div>
+            <div className="detail-row">
+              <span className="detail-label">Shortcode</span>
+              <span className="detail-value font-mono">{data.shortcode}</span>
+            </div>
+            <div className="pt-6">
+              <Link to="/view-all-cohorts-degree" className="btn-primary w-full text-center">
+                View Cohorts
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -11,74 +11,53 @@ const GradeUpdateList = ({ studentId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/grade/?student=${student}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch grades");
-        }
+        const response = await fetch(`http://127.0.0.1:8000/api/grade/?student=${student}`);
+        if (!response.ok) throw new Error("Failed to fetch grades");
         const data = await response.json();
         setGrades(data);
         setIsLoading(false);
-      } catch (error) {
-        setError("Error fetching grades");
-        setIsLoading(false);
-      }
+      } catch { setError("Error fetching grades"); setIsLoading(false); }
     };
-
     fetchData();
-  }, [studentId]);
+  }, [studentId, student]);
 
   const handleAddInfo = () => {
-    // Render a form for adding grades
-    setGrades([
-      ...grades,
-      {
-        id: "",
-        module: "",
-        ca_mark: 0,
-        exam_mark: 0,
-        cohort: "",
-        total_grade: 0,
-        student: `${student}`,
-      },
-    ]);
+    setGrades([...grades, { id: "", module: "", ca_mark: 0, exam_mark: 0, cohort: "", total_grade: 0, student: `${student}` }]);
   };
 
   return (
-    <div className="bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      {isLoading && <p className="text-center">Loading...</p>}
-      {error && <p className="text-center">{error}</p>}
-      {!isLoading && !error && (
-        <div>
-          {grades.length === 0 ? (
-            <div className="text-center">
-              <p>No grades found.</p>
-              <button
-                onClick={handleAddInfo}
-                className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Add Information
-              </button>
-            </div>
-          ) : (
-            <>
-              {grades.map((grade, index) => (
-                <div key={index} className="mt-4">
-                  <GradeUpdateForm grade={grade} student={student} />
-                  <hr className="my-4" />
-                </div>
-              ))}
-              <button
-                onClick={handleAddInfo}
-                className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Add More Information
-              </button>
-            </>
-          )}
+    <div className="page-container">
+      <div className="max-w-xl mx-auto">
+        <div className="page-header">
+          <h1 className="page-title">Update Grades</h1>
+          <p className="page-subtitle">Modify grades for student #{student}</p>
         </div>
-      )}
+
+        {isLoading && <div className="flex justify-center py-20"><div className="spinner"></div></div>}
+        {error && <div className="alert-error"><p>{error}</p></div>}
+
+        {!isLoading && !error && (
+          <div className="space-y-5">
+            {grades.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-white/25 text-sm mb-6">No grades found for this student.</p>
+                <button onClick={handleAddInfo} className="btn-outline">Add Grade</button>
+              </div>
+            ) : (
+              <>
+                {grades.map((grade, i) => (
+                  <div key={i} className="animate-slide-up" style={{ animationDelay: `${i * 80}ms`, animationFillMode: "backwards" }}>
+                    <GradeUpdateForm grade={grade} student={student} />
+                  </div>
+                ))}
+                <div className="text-center pt-2">
+                  <button onClick={handleAddInfo} className="btn-outline">Add More</button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -1,53 +1,66 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 function ViewAllModules() {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/module/")
       .then((response) => response.json())
-      .then((data) => setData(data));
+      .then((data) => { setData(data); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
-  const displayAllModules = () => {
-    return (
-      <div className="bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold mb-4">All Modules</h1>
-          <div className="grid grid-cols-1 gap-4">
-            {data.map((module, index) => (
-              <div
-                key={index}
-                className="bg-white shadow-md rounded-lg overflow-hidden"
-              >
-                <div className="px-6 py-4">
-                  <h5 className="text-xl font-semibold mb-2">
-                    {module.code} {module.full_name}
-                  </h5>
-                  <p className="text-gray-600 text-sm">
-                    CA Split: <strong>{module.ca_split}</strong>
-                  </p>
-                  <p className="text-gray-600 text-sm">
-                    Delivered To: <strong>{module.delivered_to}</strong>
-                  </p>
-                  <div className="flex justify-end">
-                    <a
-                      href={`/module/${module.code}`}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
-                    >
-                      View Module
-                    </a>
-                  </div>
+  return (
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">All Modules</h1>
+        <p className="page-subtitle">Browse available course modules</p>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-20"><div className="spinner"></div></div>
+      ) : data.length === 0 ? (
+        <div className="text-center py-20">
+          <p className="text-white/25 text-sm">No modules found.</p>
+        </div>
+      ) : (
+        <div className="card-grid">
+          {data.map((module, i) => (
+            <Link
+              key={i}
+              to={`/module/${module.code}`}
+              className="group card p-6 animate-slide-up"
+              style={{ animationDelay: `${i * 60}ms`, animationFillMode: "backwards" }}
+            >
+              <div className="flex items-start justify-between mb-3">
+                <h2 className="text-[15px] font-medium text-white/80 group-hover:text-white transition-colors">
+                  {module.full_name}
+                </h2>
+                <span className="tag ml-3 shrink-0 font-mono text-[11px]">{module.code}</span>
+              </div>
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-white/25">CA Split</span>
+                  <span className="text-white/50">{module.ca_split}%</span>
+                </div>
+                <div className="w-full bg-white/[0.04] rounded-full h-1">
+                  <div
+                    className="bg-white/20 h-1 rounded-full transition-all duration-500"
+                    style={{ width: `${module.ca_split}%` }}
+                  ></div>
                 </div>
               </div>
-            ))}
-          </div>
+              <p className="text-xs text-white/20">
+                Delivered to: {Array.isArray(module.delivered_to) ? module.delivered_to.join(", ") : module.delivered_to}
+              </p>
+            </Link>
+          ))}
         </div>
-      </div>
-    );
-  };
-
-  return displayAllModules();
+      )}
+    </div>
+  );
 }
 
 export default ViewAllModules;

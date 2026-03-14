@@ -1,57 +1,60 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
 function ViewAllStudents() {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { cohort } = useParams();
 
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/student/?cohort=${cohort}`)
       .then((response) => response.json())
-      .then((data) => setData(data));
-  }, []);
+      .then((data) => { setData(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [cohort]);
 
-  const displayAllStudents = () => {
-    return (
-      <div className="bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold mb-4">
-            All Students Taking {cohort}
-          </h1>
-          <div className="grid grid-cols-1 gap-4">
-            {data.map((student, index) => (
-              <div
-                key={index}
-                className="bg-white shadow-md rounded-lg overflow-hidden"
-              >
-                <div className="px-6 py-4">
-                  <h5 className="text-xl font-semibold mb-2">
-                    {student.first_name} {student.last_name}
-                  </h5>
-                  <p className="py-2">
-                    Email: <strong>{student.email}</strong>
-                  </p>
-                  <p className="mb-2">
-                    Student Number: <strong>{student.student_id}</strong>
-                  </p>
-                  <div className="flex justify-end">
-                    <a
-                      href={`/student/${student.student_id}`}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
-                    >
-                      View Grades & Modules
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+  return (
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">Students</h1>
+        <p className="page-subtitle">Students enrolled in cohort {cohort}</p>
       </div>
-    );
-  };
 
-  return displayAllStudents();
+      {loading ? (
+        <div className="flex justify-center py-20"><div className="spinner"></div></div>
+      ) : data.length === 0 ? (
+        <div className="text-center py-20">
+          <p className="text-white/25 text-sm">No students found in this cohort.</p>
+        </div>
+      ) : (
+        <div className="card-grid">
+          {data.map((student, i) => (
+            <div
+              key={i}
+              className="card p-6 animate-slide-up"
+              style={{ animationDelay: `${i * 60}ms`, animationFillMode: "backwards" }}
+            >
+              <div className="flex items-start justify-between mb-1">
+                <h2 className="text-[15px] font-medium text-white/80">
+                  {student.first_name} {student.last_name}
+                </h2>
+                <span className="tag ml-3 shrink-0 font-mono text-[11px]">{student.student_id}</span>
+              </div>
+              {student.email && (
+                <p className="text-xs text-white/25 mb-5 truncate">{student.email}</p>
+              )}
+              <Link
+                to={`/student/${student.student_id}`}
+                className="btn-outline text-xs w-full text-center mt-auto"
+              >
+                View Grades & Modules
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default ViewAllStudents;

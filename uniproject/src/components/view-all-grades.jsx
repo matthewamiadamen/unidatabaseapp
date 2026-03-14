@@ -1,104 +1,83 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
 function ViewAllGrades() {
   const [grades, setGrades] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { student } = useParams();
 
   useEffect(() => {
     fetchData();
-  }, [student]); // Include student in the dependency array
+  }, [student]);
 
   const fetchData = async () => {
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/grade/?student=${student}`
-      );
+      const response = await fetch(`http://127.0.0.1:8000/api/grade/?student=${student}`);
       const data = await response.json();
       setGrades(data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching grades:", error);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold mb-4">All Grades</h1>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Module
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  CA Mark
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Exam Mark
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Total Grade
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {grades.map((grade, index) => (
-                <tr key={index} className="hover:bg-gray-100">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <a
-                      href={`/module/${grade.module
-                        .split("/")
-                        .filter((part) => !!part)
-                        .pop()}`}
-                      className="text-blue-500 underline"
-                    >
-                      {grade.module
-                        .split("/")
-                        .filter((part) => !!part)
-                        .pop()}
-                    </a>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {grade.ca_mark}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {grade.exam_mark}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {grade.total_grade}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <a
-          href={`/update-grades/${student}`}
-          className="inline-block mt-4 px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
-        >
-          Update Grades
-        </a>
-        <a
-          href="/set-module-grades/"
-          className="inline-block ml-4 mt-4 px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
-        >
-          Set Modules Grades
-        </a>
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">Grade Report</h1>
+        <p className="page-subtitle">Academic results for student #{student}</p>
       </div>
+
+      {loading ? (
+        <div className="flex justify-center py-20"><div className="spinner"></div></div>
+      ) : grades.length === 0 ? (
+        <div className="text-center py-20">
+          <p className="text-white/25 text-sm">No grades recorded yet.</p>
+        </div>
+      ) : (
+        <>
+          <div className="card overflow-hidden animate-slide-up">
+            <div className="overflow-x-auto">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Module</th>
+                    <th>CA Mark</th>
+                    <th>Exam Mark</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {grades.map((grade, i) => {
+                    const total = grade.total_grade;
+                    const color = total >= 70 ? "text-emerald-400/80" : total >= 50 ? "text-amber-400/80" : "text-red-400/80";
+                    return (
+                      <tr key={i}>
+                        <td>
+                          <Link
+                            to={`/module/${grade.module.split("/").filter(Boolean).pop()}`}
+                            className="text-white/60 hover:text-white transition-colors"
+                          >
+                            {grade.module.split("/").filter(Boolean).pop()}
+                          </Link>
+                        </td>
+                        <td className="font-mono text-white/50">{grade.ca_mark}</td>
+                        <td className="font-mono text-white/50">{grade.exam_mark}</td>
+                        <td className={`font-mono font-medium ${color}`}>{total}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-3 mt-8">
+            <Link to={`/update-grades/${student}`} className="btn-primary">Update Grades</Link>
+            <Link to="/set-module-grades/" className="btn-outline">Set Module Grades</Link>
+          </div>
+        </>
+      )}
     </div>
   );
 }

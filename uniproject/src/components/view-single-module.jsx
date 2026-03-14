@@ -3,44 +3,57 @@ import { useParams } from "react-router-dom";
 
 function ViewSingleModule() {
   const [data, setData] = useState({});
+  const [loading, setLoading] = useState(true);
   const { module } = useParams();
 
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/module/${module}/`)
-      .then((response) => response.json())
-      .then((data) => setData(data));
-  }, []);
+      .then((r) => r.json())
+      .then((data) => { setData(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [module]);
 
   return (
-    <div className="bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4">Module Information</h1>
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <div className="px-4 py-5 sm:px-6">
-            <h2 className="text-lg font-semibold mb-2">Module Name:</h2>
-            <p className="text-lg">{data.full_name}</p>
-          </div>
-          <div className="px-4 py-5 sm:px-6">
-            <h2 className="text-lg font-semibold mb-2">Module Code:</h2>
-            <p className="text-lg">{data.code}</p>
-          </div>
-          <div className="px-4 py-5 sm:px-6">
-            <h2 className="text-lg font-semibold mb-2">CA Split:</h2>
-            <p className="text-lg">{data.ca_split}</p>
-          </div>
-          <div className="px-4 py-5 sm:px-6">
-            <h2 className="text-lg font-semibold mb-2">Delivered To:</h2>
-            <ul className="list-group">
-              {data.delivered_to &&
-                data.delivered_to.map((item, index) => (
-                  <li key={index} className="list-group-item">
-                    <a href={item}>{item}</a>
-                  </li>
-                ))}
-            </ul>
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">Module Details</h1>
+        <p className="page-subtitle">Module information and delivery</p>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-20"><div className="spinner"></div></div>
+      ) : (
+        <div className="max-w-xl animate-slide-up">
+          <div className="card p-8">
+            <div className="detail-row">
+              <span className="detail-label">Module Name</span>
+              <span className="detail-value">{data.full_name}</span>
+            </div>
+            <div className="detail-row">
+              <span className="detail-label">Code</span>
+              <span className="detail-value font-mono">{data.code}</span>
+            </div>
+            <div className="detail-row">
+              <span className="detail-label">CA Split</span>
+              <div className="flex items-center gap-3">
+                <span className="detail-value">{data.ca_split}%</span>
+                <div className="w-20 bg-white/[0.04] rounded-full h-1.5">
+                  <div className="bg-white/20 h-1.5 rounded-full" style={{ width: `${data.ca_split}%` }}></div>
+                </div>
+              </div>
+            </div>
+            <div className="pt-4 pb-1">
+              <span className="detail-label block mb-3">Delivered To</span>
+              <div className="flex flex-wrap gap-2">
+                {data.delivered_to &&
+                  data.delivered_to.map((item, i) => (
+                    <span key={i} className="tag">{item}</span>
+                  ))}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
