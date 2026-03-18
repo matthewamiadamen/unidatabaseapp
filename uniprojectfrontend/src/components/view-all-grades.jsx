@@ -9,20 +9,19 @@ function ViewAllGrades() {
   const { student } = useParams();
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/grade/?student=${student}`);
+        const data = await response.json();
+        setGrades(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching grades:", error);
+        setLoading(false);
+      }
+    };
     fetchData();
   }, [student]);
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/grade/?student=${student}`);
-      const data = await response.json();
-      setGrades(data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching grades:", error);
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="page-container">
