@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000";
+
 export default function ViewAllDegrees() {
   const [degrees, setDegrees] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/degree/")
+    fetch(`${API_BASE_URL}/api/degree/`)
       .then((response) => response.json())
       .then((data) => { setDegrees(data); setLoading(false); })
       .catch(() => setLoading(false));

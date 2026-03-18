@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000";
+
 const CreateNewDegree = () => {
   const [fullName, setFullName] = useState("");
   const [shortcode, setShortcode] = useState("");
@@ -9,7 +11,7 @@ const CreateNewDegree = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/degree/", {
+      const response = await fetch(`${API_BASE_URL}/api/degree/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ full_name: fullName, shortcode }),

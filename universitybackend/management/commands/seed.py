@@ -2,7 +2,7 @@
 # python manage.py seed
 
 from django.core.management.base import BaseCommand
-from university.models import *
+from universitybackend.models import *
 import pandas as pd
 import random
 import names

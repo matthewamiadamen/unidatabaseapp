@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import GradeUpdateForm from "./grade-update-form";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000";
+
 const GradeUpdateList = ({ studentId }) => {
   const [grades, setGrades] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -11,7 +13,7 @@ const GradeUpdateList = ({ studentId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/grade/?student=${student}`);
+        const response = await fetch(`${API_BASE_URL}/api/grade/?student=${student}`);
         if (!response.ok) throw new Error("Failed to fetch grades");
         const data = await response.json();
         setGrades(data);

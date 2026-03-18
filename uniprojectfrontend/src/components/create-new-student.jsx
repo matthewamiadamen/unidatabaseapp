@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000";
+
 function CreateNewStudent() {
   const usedValues = [];
   const [cohort, setCohort] = useState([]);
@@ -9,16 +11,16 @@ function CreateNewStudent() {
   const [form, setForm] = useState({ student_id: "", first_name: "", last_name: "", cohort: "" });
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/student/").then((r) => r.json()).then((d) => setCohort(d)).catch(console.log);
+    fetch(`${API_BASE_URL}/api/student/`).then((r) => r.json()).then((d) => setCohort(d)).catch(console.log);
   }, []);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/cohort/").then((r) => r.json()).then((d) => setDegree(d)).catch(console.log);
+    fetch(`${API_BASE_URL}/api/cohort/`).then((r) => r.json()).then((d) => setDegree(d)).catch(console.log);
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch("http://127.0.0.1:8000/api/student/", {
+    fetch(`${API_BASE_URL}/api/student/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),

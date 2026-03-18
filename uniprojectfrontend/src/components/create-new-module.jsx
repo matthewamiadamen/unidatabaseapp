@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000";
+
 const CreateNewModule = () => {
   const [code, setCode] = useState("");
   const [fullName, setFullName] = useState("");
@@ -11,7 +13,7 @@ const CreateNewModule = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/module/", {
+      const response = await fetch(`${API_BASE_URL}/api/module/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, full_name: fullName, delivered_to: deliveredTo, ca_split: parseInt(caSplit) }),

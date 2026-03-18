@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000";
+
 function ViewAllCohortsDegree() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { degree } = useParams();
 
   useEffect(() => {
-    let apiUrl = "http://127.0.0.1:8000/api/cohort/";
+    let apiUrl = `${API_BASE_URL}/api/cohort/`;
     if (degree) apiUrl += `?degree=${degree}`;
     fetch(apiUrl)
       .then((r) => r.json())

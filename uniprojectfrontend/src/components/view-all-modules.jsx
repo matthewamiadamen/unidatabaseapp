@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000";
+
 function ViewAllModules() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/module/")
+    fetch(`${API_BASE_URL}/api/module/`)
       .then((response) => response.json())
       .then((data) => { setData(data); setLoading(false); })
       .catch(() => setLoading(false));

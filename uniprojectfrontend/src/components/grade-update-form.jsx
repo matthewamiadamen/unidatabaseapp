@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000";
+
 const GradeUpdateForm = ({ grade, student }) => {
   const [caMark, setCaMark] = useState(grade.ca_mark);
   const [examMark, setExamMark] = useState(grade.exam_mark);
@@ -9,7 +11,7 @@ const GradeUpdateForm = ({ grade, student }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/grade/${grade.id}/`, {
+      const response = await fetch(`${API_BASE_URL}/api/grade/${grade.id}/`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

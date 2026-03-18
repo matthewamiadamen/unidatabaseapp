@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000";
+
 function ViewSingleStudent() {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const { student } = useParams();
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/student/${student}/`)
+    fetch(`${API_BASE_URL}/api/student/${student}/`)
       .then((r) => r.json())
       .then((data) => { setData(data); setLoading(false); })
       .catch(() => setLoading(false));

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000";
+
 function ViewAllGrades() {
   const [grades, setGrades] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +14,7 @@ function ViewAllGrades() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/grade/?student=${student}`);
+      const response = await fetch(`${API_BASE_URL}/api/grade/?student=${student}`);
       const data = await response.json();
       setGrades(data);
       setLoading(false);

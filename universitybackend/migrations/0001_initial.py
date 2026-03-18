@@ -3,7 +3,7 @@
 import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
-import university.models
+import universitybackend.models
 
 
 class Migration(migrations.Migration):
@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Student',
             fields=[
-                ('student_id', models.CharField(default=university.models.student_id_generator, max_length=8, primary_key=True, serialize=False)),
+                ('student_id', models.CharField(default=universitybackend.models.student_id_generator, max_length=8, primary_key=True, serialize=False)),
                 ('first_name', models.TextField()),
                 ('last_name', models.TextField()),
                 ('cohort', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='university.cohort')),
