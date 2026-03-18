@@ -1,11 +1,13 @@
-FROM python:3
+FROM python:3.12-slim
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
 #RUN apt-get update && apt install gcc -y && apt-get install build-essential -y && apt-get install python3-dev -y
-RUN mkdir /code
 WORKDIR /code
 COPY requirements.txt /code/
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 COPY . /code/
-CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
-# expose 8000 port
+
+ENV PORT=8000
 EXPOSE 8000
+CMD ["sh", "-c", "python manage.py migrate && gunicorn restexample.wsgi:application --bind 0.0.0.0:${PORT}"]
