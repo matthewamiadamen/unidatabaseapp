@@ -1,4 +1,6 @@
-# Sample university rest api 
+# University Management REST API
+
+*Full-stack academic records system — Django REST Framework backend, React frontend*
 
 Backend:
 [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
@@ -25,8 +27,8 @@ Deployment:
 [![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)](https://render.com/)
 
 
-This is my university API project built with Django REST Framework.
-It keeps track of:
+A full-stack university records system with a Django REST Framework API, interactive Swagger/ReDoc documentation, and a React frontend. Tracks academic entities across the full student lifecycle:
+
 
 * Students
 * Degrees
